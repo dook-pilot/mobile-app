@@ -14,7 +14,7 @@ class _ApiService implements ApiService {
   String? baseUrl;
 
   @override
-  Future<CarDetailsResponse> carDetailsRequest(file) async {
+  Future<CarDetailsResponse> carDetailsRequest(file, lat, lng) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -23,12 +23,17 @@ class _ApiService implements ApiService {
         'file',
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
+    _data.fields.add(MapEntry('lat', lat));
+    _data.fields.add(MapEntry('lng', lng));
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<CarDetailsResponse>(
-            Options(method: 'POST', headers: _headers, extra: _extra)
-                .compose(_dio.options, '/vngp1_predict_license_plate',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+        _setStreamType<CarDetailsResponse>(Options(
+                method: 'POST',
+                headers: _headers,
+                extra: _extra,
+                contentType: 'multipart/form-data')
+            .compose(_dio.options, '/license-plate/',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = CarDetailsResponse.fromJson(_result.data!);
     return value;
   }
@@ -42,7 +47,7 @@ class _ApiService implements ApiService {
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<LicenseDetailsResponse>(
             Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, '/${id}/?format=json',
+                .compose(_dio.options, '/rdw/${id}/?format=json',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = LicenseDetailsResponse.fromJson(_result.data!);

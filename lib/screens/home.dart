@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
 import 'package:vng_pilot/configs/api_service.dart';
 import 'package:vng_pilot/configs/colors.dart';
 import 'package:vng_pilot/configs/configs.dart';
@@ -57,7 +58,11 @@ class _HomeActivityState extends State<HomeActivity> {
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
-                      onTap: () => _showImagePicker(),
+                      onTap: () async {
+                        _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1100, maxHeight: 700);
+                        setState(() {});
+                        // _showImagePicker();
+                      },
                       child: Row(
                         children: [
                           Padding(
@@ -252,54 +257,80 @@ class _HomeActivityState extends State<HomeActivity> {
     );
   }
 
-  void _showImagePicker() {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CONTAINER_RADIUS)),
-            child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Select Image',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 10),
-                  ListTile(
-                    leading: Icon(Icons.photo_library_sharp, size: 30, color: textDarkColor),
-                    minLeadingWidth: 10,
-                    title: const Text('Pick From Gallery'),
-                    onTap: () async {
-                      _selectedImage = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1024, maxHeight: 1024);
-                      setState(() {});
-                      Navigator.pop(context);
-                    },
-                  ),
-                  const Divider(thickness: 0.5, height: 15, color: lineColor),
-                  ListTile(
-                    leading: Icon(Icons.camera_alt, size: 30, color: textDarkColor),
-                    minLeadingWidth: 10,
-                    title: const Text('Take From Camera'),
-                    onTap: () async {
-                      _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1024, maxHeight: 1024);
-                      setState(() {});
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+  // void _showImagePicker() {
+  //   showDialog(
+  //       context: context,
+  //       barrierDismissible: true,
+  //       builder: (context) {
+  //         return Dialog(
+  //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CONTAINER_RADIUS)),
+  //           child: Padding(
+  //             padding: const EdgeInsets.all(15),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.stretch,
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 const Text(
+  //                   'Select Image',
+  //                   textAlign: TextAlign.center,
+  //                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+  //                 ),
+  //                 const SizedBox(height: 10),
+  //                 ListTile(
+  //                   leading: Icon(Icons.photo_library_sharp, size: 30, color: textDarkColor),
+  //                   minLeadingWidth: 10,
+  //                   title: const Text('Pick From Gallery'),
+  //                   onTap: () async {
+  //                     _selectedImage = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1100, maxHeight: 700);
+  //                     setState(() {});
+  //                     Navigator.pop(context);
+  //                   },
+  //                 ),
+  //                 const Divider(thickness: 0.5, height: 15, color: lineColor),
+  //                 ListTile(
+  //                   leading: Icon(Icons.camera_alt, size: 30, color: textDarkColor),
+  //                   minLeadingWidth: 10,
+  //                   title: const Text('Take From Camera'),
+  //                   onTap: () async {
+  //                     _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1100, maxHeight: 700);
+  //                     setState(() {});
+  //                     Navigator.pop(context);
+  //                   },
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         );
+  //       });
+  // }
 
   Future<void> _requestData() async {
+    Location location = Location();
+
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+    LocationData locationData;
+
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        showErrorDialog(context, "Location must be turned on.");
+        return;
+      }
+    }
+
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        showErrorDialog(context, "Location Permission must be allowed.");
+        return;
+      }
+    }
+
+    locationData = await location.getLocation();
+
     setState(() => data = null);
 
     if (_selectedImage == null) {
@@ -313,8 +344,8 @@ class _HomeActivityState extends State<HomeActivity> {
 
     print(file.lengthSync());
 
-    final apiService = ApiService.create(baseUrl: "https://5c7b-95-217-15-148.ngrok.io");
-    apiService.carDetailsRequest(file).then((body) async {
+    final apiService = ApiService.create();
+    apiService.carDetailsRequest(file, locationData.latitude.toString(), locationData.longitude.toString()).then((body) async {
       progressDialog.dismiss();
       setState(() => data = body);
     }).catchError((error) {
@@ -327,7 +358,7 @@ class _HomeActivityState extends State<HomeActivity> {
   Future<void> _requestLicenseData(String licenseNo) async {
     progressDialog.show(context);
 
-    final apiService = ApiService.create(baseUrl: "https://6626-3-121-217-251.eu.ngrok.io");
+    final apiService = ApiService.create();
     apiService.getLicenseDetail(licenseNo).then((body) async {
       progressDialog.dismiss();
 
