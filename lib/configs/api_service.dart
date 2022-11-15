@@ -16,8 +16,12 @@ abstract class ApiService {
 
   @MultiPart()
   @POST("/license-plate/")
-  Future<CarDetailsResponse> carDetailsRequest(@Part() File file, @Part() String lat, @Part() String lng);
+  Future<CarDetailsResponse> carDetailsRequest(@Part() File file);
 
-  @GET("/rdw/{id}/?format=json")
-  Future<LicenseDetailsResponse> getLicenseDetail(@Path("id") String id);
+  // @GET("/rdw/{id}/?format=json")
+  // Future<LicenseDetailsResponse> getLicenseDetail(@Path("id") String id);
+
+  @MultiPart()
+  @POST("temp.php")
+  Future<String> temp(@Part() File image);
 }

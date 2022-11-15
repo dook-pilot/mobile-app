@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:native_exif/native_exif.dart';
 import 'package:vng_pilot/configs/api_service.dart';
 import 'package:vng_pilot/configs/colors.dart';
 import 'package:vng_pilot/configs/configs.dart';
@@ -20,10 +21,10 @@ class HomeActivity extends StatefulWidget {
 class _HomeActivityState extends State<HomeActivity> {
   final ProgressDialog progressDialog = ProgressDialog();
   final ImagePicker _picker = ImagePicker();
-  Map<String, LicenseDetailsResponse> _map = {};
 
   CarDetailsResponse? data;
   XFile? _selectedImage;
+  int _type = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +59,8 @@ class _HomeActivityState extends State<HomeActivity> {
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
-                      onTap: () async {
-                        _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1100, maxHeight: 700);
-                        setState(() {});
-                        // _showImagePicker();
+                      onTap: () {
+                        _showImagePicker();
                       },
                       child: Row(
                         children: [
@@ -83,21 +82,21 @@ class _HomeActivityState extends State<HomeActivity> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 12)),
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(WIDGET_RADIUS),
-                        )),
-                        elevation: MaterialStateProperty.all(3),
-                        backgroundColor: MaterialStateProperty.all(primaryColor),
-                        textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
-                    onPressed: () {
-                      _requestData();
-                    },
-                    child: Text('Submit', style: TextStyle(color: Colors.white)),
-                  ),
+                  // const SizedBox(height: 10),
+                  // ElevatedButton(
+                  //   style: ButtonStyle(
+                  //       padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 12)),
+                  //       shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(WIDGET_RADIUS),
+                  //       )),
+                  //       elevation: MaterialStateProperty.all(3),
+                  //       backgroundColor: MaterialStateProperty.all(primaryColor),
+                  //       textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
+                  //   onPressed: () {
+                  //     _requestData();
+                  //   },
+                  //   child: Text('Submit', style: TextStyle(color: Colors.white)),
+                  // ),
                 ],
               ),
             ),
@@ -110,15 +109,18 @@ class _HomeActivityState extends State<HomeActivity> {
   }
 
   Widget _buildCarDetails() {
+    var carDetails = data?.license_plate_company_data;
+
     List<Widget> widgetList = [];
-    data?.license_number?.forEach((element) {
+    carDetails?.license_number?.forEach((element) {
       widgetList.add(
         InkWell(
           onTap: () {
-            if (_map.containsKey(element)) {
-              viewDetailsDialog(_map[element]!);
+            var licenseModel = data?.license_numbers_data?.firstWhere((x) => x?.title == element, orElse: () => null);
+            if (licenseModel != null) {
+              viewDetailsDialog(licenseModel);
             } else {
-              _requestLicenseData(element ?? "");
+              showToast("License Details not found.");
             }
           },
           child: Padding(
@@ -166,7 +168,7 @@ class _HomeActivityState extends State<HomeActivity> {
               const SizedBox(width: 10),
               Expanded(
                   child: Text(
-                data?.place_api_company_name ?? "-",
+                carDetails?.place_api_company_name ?? "-",
                 style: const TextStyle(fontSize: 14, color: textDarkColor),
               )),
             ],
@@ -182,7 +184,7 @@ class _HomeActivityState extends State<HomeActivity> {
               const SizedBox(width: 10),
               Expanded(
                   child: Text(
-                data?.KVK_found ?? "-",
+                carDetails?.KVK_found ?? "-",
                 style: const TextStyle(fontSize: 14, color: textDarkColor),
               )),
             ],
@@ -198,7 +200,7 @@ class _HomeActivityState extends State<HomeActivity> {
               const SizedBox(width: 10),
               Expanded(
                   child: Text(
-                data?.Bovag_registered ?? "-",
+                carDetails?.Bovag_registered ?? "-",
                 style: const TextStyle(fontSize: 14, color: textDarkColor),
               )),
             ],
@@ -214,7 +216,7 @@ class _HomeActivityState extends State<HomeActivity> {
               const SizedBox(width: 10),
               Expanded(
                   child: Text(
-                data?.duplicates_found ?? "-",
+                carDetails?.duplicates_found ?? "-",
                 style: TextStyle(fontSize: 14, color: textDarkColor),
               )),
             ],
@@ -230,7 +232,7 @@ class _HomeActivityState extends State<HomeActivity> {
               const SizedBox(width: 10),
               Expanded(
                   child: Text(
-                data?.rating ?? "-",
+                carDetails?.rating ?? "-",
                 style: const TextStyle(fontSize: 14, color: textDarkColor),
               )),
             ],
@@ -257,66 +259,18 @@ class _HomeActivityState extends State<HomeActivity> {
     );
   }
 
-  // void _showImagePicker() {
-  //   showDialog(
-  //       context: context,
-  //       barrierDismissible: true,
-  //       builder: (context) {
-  //         return Dialog(
-  //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CONTAINER_RADIUS)),
-  //           child: Padding(
-  //             padding: const EdgeInsets.all(15),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.stretch,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 const Text(
-  //                   'Select Image',
-  //                   textAlign: TextAlign.center,
-  //                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-  //                 ),
-  //                 const SizedBox(height: 10),
-  //                 ListTile(
-  //                   leading: Icon(Icons.photo_library_sharp, size: 30, color: textDarkColor),
-  //                   minLeadingWidth: 10,
-  //                   title: const Text('Pick From Gallery'),
-  //                   onTap: () async {
-  //                     _selectedImage = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1100, maxHeight: 700);
-  //                     setState(() {});
-  //                     Navigator.pop(context);
-  //                   },
-  //                 ),
-  //                 const Divider(thickness: 0.5, height: 15, color: lineColor),
-  //                 ListTile(
-  //                   leading: Icon(Icons.camera_alt, size: 30, color: textDarkColor),
-  //                   minLeadingWidth: 10,
-  //                   title: const Text('Take From Camera'),
-  //                   onTap: () async {
-  //                     _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1100, maxHeight: 700);
-  //                     setState(() {});
-  //                     Navigator.pop(context);
-  //                   },
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         );
-  //       });
-  // }
-
-  Future<void> _requestData() async {
+  Future<LocationData?> _fetchLocation() async {
     Location location = Location();
 
     bool serviceEnabled;
     PermissionStatus permissionGranted;
-    LocationData locationData;
 
     serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await location.requestService();
       if (!serviceEnabled) {
         showErrorDialog(context, "Location must be turned on.");
-        return;
+        return null;
       }
     }
 
@@ -325,27 +279,109 @@ class _HomeActivityState extends State<HomeActivity> {
       permissionGranted = await location.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
         showErrorDialog(context, "Location Permission must be allowed.");
-        return;
+        return null;
       }
     }
 
-    locationData = await location.getLocation();
+    return await location.getLocation();
+  }
 
-    setState(() => data = null);
+  void _showImagePicker() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CONTAINER_RADIUS)),
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Select Image',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 10),
+                  ListTile(
+                    leading: Icon(Icons.photo_library_sharp, size: 30, color: textDarkColor),
+                    minLeadingWidth: 10,
+                    title: const Text('Pick From Gallery'),
+                    onTap: () async {
+                      // _selectedImage = await _picker.pickImage(source: ImageSource.gallery, maxWidth: 1100, maxHeight: 700);
+                      _selectedImage = await _picker.pickImage(source: ImageSource.gallery);
+                      _type = 0;
+                      setState(() {});
+                      Navigator.pop(context);
+                      _requestData(null);
+                    },
+                  ),
+                  const Divider(thickness: 0.5, height: 15, color: lineColor),
+                  ListTile(
+                    leading: Icon(Icons.camera_alt, size: 30, color: textDarkColor),
+                    minLeadingWidth: 10,
+                    title: const Text('Take From Camera'),
+                    onTap: () async {
+                      LocationData? locationData = await _fetchLocation();
+                      if (locationData != null) {
+                        // _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1100, maxHeight: 700);
+                        _selectedImage = await _picker.pickImage(source: ImageSource.camera);
+                        _type = 1;
+                        setState(() {});
+                        Navigator.pop(context);
+                        _requestData(locationData);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
 
+  Future<void> _requestData(LocationData? locationData) async {
     if (_selectedImage == null) {
       showToast("Please select image");
       return;
     }
 
-    progressDialog.show(context);
+    File uploadFile = File(_selectedImage!.path);
 
-    File file = File(_selectedImage!.path);
+    if (_type == 0) {
+      var exif = await Exif.fromPath(_selectedImage!.path);
+      final lat = await exif.getAttribute("GPSLatitude");
+      final lng = await exif.getAttribute("GPSLongitude");
+      print(lat);
+      print(lng);
 
-    print(file.lengthSync());
+      if (lat == null && lng == null) {
+        showErrorDialog(context, "This image doesn't have any location coordinates. You can't submit request.");
+        return;
+      }
+
+      progressDialog.show(context);
+    } else {
+
+      if (locationData == null) {
+        showToast("Location must be required");
+        return;
+      }
+
+      setState(() => data = null);
+      progressDialog.show(context);
+
+      var exif = await Exif.fromPath(_selectedImage!.path);
+      await exif.writeAttributes({"GPSLatitude": locationData.latitude.toString(), "GPSLongitude": locationData.longitude.toString()});
+      await exif.close();
+
+      uploadFile = File(_selectedImage!.path);
+    }
 
     final apiService = ApiService.create();
-    apiService.carDetailsRequest(file, locationData.latitude.toString(), locationData.longitude.toString()).then((body) async {
+    apiService.carDetailsRequest(uploadFile).then((body) async {
       progressDialog.dismiss();
       setState(() => data = body);
     }).catchError((error) {
@@ -353,29 +389,72 @@ class _HomeActivityState extends State<HomeActivity> {
       handleError(context, error);
       print(error);
     });
+
+    // var exif = await Exif.fromPath(_selectedImage!.path);
+    // final originalDate = await exif.getOriginalDate();
+    // var attributes = await exif.getAttributes();
+    // print(originalDate);
+    // print(attributes);
+
+    // if (lat > 0) {
+    //   exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, "N");
+    // } else {
+    //   exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, "S");
+    // }
+    //
+    // if (lng > 0) {
+    //   exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, "E");
+    // } else {
+    //   exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, "W");
+    // }
+
+    // await exif.writeAttributes({"GPSLatitude": "13.02",  "GPSLongitude": "152.02"});
+    // // await exif.writeAttribute("Longitude", "23.0232");
+    // await exif.close();
+    //
+    // exif = await Exif.fromPath(_selectedImage!.path);
+    // attributes = await exif.getAttributes();
+    // // var lat = await exif.getAttribute("GPSLatitude");
+    // print(attributes);
+    // // print(lat);
+
+    // final apiService = ApiService.create();
+    // apiService.temp(uploadFile).then((body) async {
+    //   progressDialog.dismiss();
+    //   print(body);
+    // }).catchError((error) {
+    //   progressDialog.dismiss();
+    //   handleError(context, error);
+    //   print(error);
+    // });
   }
 
-  Future<void> _requestLicenseData(String licenseNo) async {
-    progressDialog.show(context);
+  // Future<void> _requestLicenseData(String licenseNo) async {
+  //   progressDialog.show(context);
+  //
+  //   final apiService = ApiService.create();
+  //   apiService.getLicenseDetail(licenseNo).then((body) async {
+  //     progressDialog.dismiss();
+  //
+  //     if (body.status == 200) {
+  //       _map[licenseNo] = body;
+  //       viewDetailsDialog(body);
+  //     } else {
+  //       showToast("No record found!");
+  //     }
+  //   }).catchError((error) {
+  //     progressDialog.dismiss();
+  //     handleError(context, error);
+  //     print(error);
+  //   });
+  // }
 
-    final apiService = ApiService.create();
-    apiService.getLicenseDetail(licenseNo).then((body) async {
-      progressDialog.dismiss();
+  void viewDetailsDialog(LicenseDetailsModel model) {
+    if (model.status != 200) {
+      showErrorDialog(context, model.error);
+      return;
+    }
 
-      if (body.status == 200) {
-        _map[licenseNo] = body;
-        viewDetailsDialog(body);
-      } else {
-        showToast("No record found!");
-      }
-    }).catchError((error) {
-      progressDialog.dismiss();
-      handleError(context, error);
-      print(error);
-    });
-  }
-
-  void viewDetailsDialog(LicenseDetailsResponse model) {
     List<Widget> tabList = [];
     List<Widget> tabViewList = [];
 
@@ -458,14 +537,18 @@ class _HomeActivityState extends State<HomeActivity> {
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
-          SizedBox(width: 20, child: Text(text1, style: TextStyle(fontSize: 11))),
+          Expanded(child: Text(text1, style: TextStyle(fontSize: 11))),
           SizedBox(width: 8),
-          SizedBox(width: 100, child: Text(text2, style: TextStyle(fontSize: 11))),
+          Expanded(child: Text(text2, style: TextStyle(fontSize: 11))),
           SizedBox(width: 8),
-          SizedBox(width: 100, child: Text(text3, style: TextStyle(fontSize: 11))),
-          SizedBox(width: 8),
-          Expanded(child: Text(text4 ?? "", style: TextStyle(fontSize: 10))),
-          SizedBox(width: 5),
+          if (!isBlank(text3)) ...[
+            Expanded(child: Text(text3, style: TextStyle(fontSize: 11))),
+            SizedBox(width: 8),
+          ],
+          if (!isBlank(text4)) ...[
+            Expanded(child: Text(text4 ?? "", style: TextStyle(fontSize: 10))),
+            SizedBox(width: 5),
+          ],
           InkWell(
             onTap: () => viewInfoDialog(text2, info),
             child: const Padding(

@@ -27,3 +27,7 @@ void handleError(BuildContext context, dynamic error) {
     showErrorDialog(context, "Server error");
   }
 }
+
+bool isBlank(String? value) {
+  return (value == null || value.trim().isEmpty);
+}

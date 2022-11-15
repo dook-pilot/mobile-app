@@ -3,14 +3,10 @@ part 'models.g.dart';
 
 @JsonSerializable()
 class CarDetailsResponse {
-  String? place_api_company_name;
-  String? KVK_found;
-  String? Bovag_registered;
-  String? duplicates_found;
-  String? rating;
-  List<String?>? license_number;
+  CarDetailsModel? license_plate_company_data;
+  List<LicenseDetailsModel?>? license_numbers_data;
 
-  CarDetailsResponse(this.place_api_company_name, this.KVK_found, this.Bovag_registered, this.duplicates_found, this.rating, this.license_number);
+  CarDetailsResponse(this.license_plate_company_data, this.license_numbers_data);
 
   factory CarDetailsResponse.fromJson(Map<String, dynamic> json) => _$CarDetailsResponseFromJson(json);
 
@@ -18,15 +14,33 @@ class CarDetailsResponse {
 }
 
 @JsonSerializable()
-class LicenseDetailsResponse {
+class CarDetailsModel {
+  String? place_api_company_name;
+  String? KVK_found;
+  String? Bovag_registered;
+  String? duplicates_found;
+  String? rating;
+  List<String?>? license_number;
+
+  CarDetailsModel(this.place_api_company_name, this.KVK_found, this.Bovag_registered, this.duplicates_found, this.rating, this.license_number);
+
+  factory CarDetailsModel.fromJson(Map<String, dynamic> json) => _$CarDetailsModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CarDetailsModelToJson(this);
+}
+
+@JsonSerializable()
+class LicenseDetailsModel {
+  String? title;
   int? status;
+  String? error;
   List<CategoryModel>? categories;
 
-  LicenseDetailsResponse(this.status, this.categories);
+  LicenseDetailsModel(this.title, this.status, this.error, this.categories);
 
-  factory LicenseDetailsResponse.fromJson(Map<String, dynamic> json) => _$LicenseDetailsResponseFromJson(json);
+  factory LicenseDetailsModel.fromJson(Map<String, dynamic> json) => _$LicenseDetailsModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LicenseDetailsResponseToJson(this);
+  Map<String, dynamic> toJson() => _$LicenseDetailsModelToJson(this);
 }
 
 @JsonSerializable()

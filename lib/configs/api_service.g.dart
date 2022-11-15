@@ -14,7 +14,7 @@ class _ApiService implements ApiService {
   String? baseUrl;
 
   @override
-  Future<CarDetailsResponse> carDetailsRequest(file, lat, lng) async {
+  Future<CarDetailsResponse> carDetailsRequest(file) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -23,8 +23,6 @@ class _ApiService implements ApiService {
         'file',
         MultipartFile.fromFileSync(file.path,
             filename: file.path.split(Platform.pathSeparator).last)));
-    _data.fields.add(MapEntry('lat', lat));
-    _data.fields.add(MapEntry('lng', lng));
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<CarDetailsResponse>(Options(
                 method: 'POST',
@@ -39,18 +37,24 @@ class _ApiService implements ApiService {
   }
 
   @override
-  Future<LicenseDetailsResponse> getLicenseDetail(id) async {
+  Future<String> temp(image) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<LicenseDetailsResponse>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, '/rdw/${id}/?format=json',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = LicenseDetailsResponse.fromJson(_result.data!);
+    final _data = FormData();
+    _data.files.add(MapEntry(
+        'image',
+        MultipartFile.fromFileSync(image.path,
+            filename: image.path.split(Platform.pathSeparator).last)));
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'multipart/form-data')
+        .compose(_dio.options, 'temp.php',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
     return value;
   }
 

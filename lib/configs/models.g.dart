@@ -8,6 +8,25 @@ part of 'models.dart';
 
 CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
     CarDetailsResponse(
+      json['license_plate_company_data'] == null
+          ? null
+          : CarDetailsModel.fromJson(
+              json['license_plate_company_data'] as Map<String, dynamic>),
+      (json['license_numbers_data'] as List<dynamic>?)
+          ?.map((e) => e == null
+              ? null
+              : LicenseDetailsModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
+    <String, dynamic>{
+      'license_plate_company_data': instance.license_plate_company_data,
+      'license_numbers_data': instance.license_numbers_data,
+    };
+
+CarDetailsModel _$CarDetailsModelFromJson(Map<String, dynamic> json) =>
+    CarDetailsModel(
       json['place_api_company_name'] as String?,
       json['KVK_found'] as String?,
       json['Bovag_registered'] as String?,
@@ -18,7 +37,7 @@ CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
+Map<String, dynamic> _$CarDetailsModelToJson(CarDetailsModel instance) =>
     <String, dynamic>{
       'place_api_company_name': instance.place_api_company_name,
       'KVK_found': instance.KVK_found,
@@ -28,19 +47,22 @@ Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
       'license_number': instance.license_number,
     };
 
-LicenseDetailsResponse _$LicenseDetailsResponseFromJson(
-        Map<String, dynamic> json) =>
-    LicenseDetailsResponse(
+LicenseDetailsModel _$LicenseDetailsModelFromJson(Map<String, dynamic> json) =>
+    LicenseDetailsModel(
+      json['title'] as String?,
       json['status'] as int?,
+      json['error'] as String?,
       (json['categories'] as List<dynamic>?)
           ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$LicenseDetailsResponseToJson(
-        LicenseDetailsResponse instance) =>
+Map<String, dynamic> _$LicenseDetailsModelToJson(
+        LicenseDetailsModel instance) =>
     <String, dynamic>{
+      'title': instance.title,
       'status': instance.status,
+      'error': instance.error,
       'categories': instance.categories,
     };
 
