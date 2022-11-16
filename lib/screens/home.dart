@@ -82,21 +82,21 @@ class _HomeActivityState extends State<HomeActivity> {
                       ),
                     ),
                   ),
-                  // const SizedBox(height: 10),
-                  // ElevatedButton(
-                  //   style: ButtonStyle(
-                  //       padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 12)),
-                  //       shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(WIDGET_RADIUS),
-                  //       )),
-                  //       elevation: MaterialStateProperty.all(3),
-                  //       backgroundColor: MaterialStateProperty.all(primaryColor),
-                  //       textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
-                  //   onPressed: () {
-                  //     _requestData();
-                  //   },
-                  //   child: Text('Submit', style: TextStyle(color: Colors.white)),
-                  // ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                        padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 12)),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(WIDGET_RADIUS),
+                        )),
+                        elevation: MaterialStateProperty.all(3),
+                        backgroundColor: MaterialStateProperty.all(primaryColor),
+                        textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
+                    onPressed: () {
+                      _requestData();
+                    },
+                    child: Text('Submit', style: TextStyle(color: Colors.white)),
+                  ),
                 ],
               ),
             ),
@@ -315,7 +315,6 @@ class _HomeActivityState extends State<HomeActivity> {
                       _type = 0;
                       setState(() {});
                       Navigator.pop(context);
-                      _requestData(null);
                     },
                   ),
                   const Divider(thickness: 0.5, height: 15, color: lineColor),
@@ -324,15 +323,11 @@ class _HomeActivityState extends State<HomeActivity> {
                     minLeadingWidth: 10,
                     title: const Text('Take From Camera'),
                     onTap: () async {
-                      LocationData? locationData = await _fetchLocation();
-                      if (locationData != null) {
-                        // _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1100, maxHeight: 700);
-                        _selectedImage = await _picker.pickImage(source: ImageSource.camera);
-                        _type = 1;
-                        setState(() {});
-                        Navigator.pop(context);
-                        _requestData(locationData);
-                      }
+                      // _selectedImage = await _picker.pickImage(source: ImageSource.camera, maxWidth: 1100, maxHeight: 700);
+                      _selectedImage = await _picker.pickImage(source: ImageSource.camera);
+                      _type = 1;
+                      setState(() {});
+                      Navigator.pop(context);
                     },
                   ),
                 ],
@@ -342,7 +337,7 @@ class _HomeActivityState extends State<HomeActivity> {
         });
   }
 
-  Future<void> _requestData(LocationData? locationData) async {
+  Future<void> _requestData() async {
     if (_selectedImage == null) {
       showToast("Please select image");
       return;
@@ -364,7 +359,7 @@ class _HomeActivityState extends State<HomeActivity> {
 
       progressDialog.show(context);
     } else {
-
+      LocationData? locationData = await _fetchLocation();
       if (locationData == null) {
         showToast("Location must be required");
         return;
