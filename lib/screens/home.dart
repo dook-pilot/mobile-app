@@ -37,7 +37,7 @@ class _HomeActivityState extends State<HomeActivity> {
       ),
       body: SafeArea(
         child: ListView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(15),
           children: [
             Container(
@@ -117,10 +117,10 @@ class _HomeActivityState extends State<HomeActivity> {
         InkWell(
           onTap: () {
             var licenseModel = data?.license_numbers_data?.firstWhere((x) => x?.title == element, orElse: () => null);
-            if (licenseModel != null) {
+            if (licenseModel != null && (licenseModel.isError ?? true) == false) {
               viewDetailsDialog(licenseModel);
             } else {
-              showToast("License Details not found.");
+              showErrorDialog(context, licenseModel?.errMsg ?? "License Detail not found.");
             }
           },
           child: Padding(
@@ -352,11 +352,12 @@ class _HomeActivityState extends State<HomeActivity> {
       print(lat);
       print(lng);
 
-      if (lat == null && lng == null) {
-        showErrorDialog(context, "This image doesn't have any location coordinates. You can't submit request.");
-        return;
-      }
+      //if (lat == null && lng == null) {
+      //  showErrorDialog(context, "This image doesn't have any location coordinates. You can't submit request.");
+      //  return;
+      //}
 
+      setState(() => data = null);
       progressDialog.show(context);
     } else {
       LocationData? locationData = await _fetchLocation();
@@ -378,10 +379,16 @@ class _HomeActivityState extends State<HomeActivity> {
     final apiService = ApiService.create();
     apiService.carDetailsRequest(uploadFile).then((body) async {
       progressDialog.dismiss();
-      setState(() => data = body);
+
+      if ((body.isError ?? true) == false) {
+        setState(() => data = body);
+      }
+      else {
+        showErrorDialog(context, body.errMsg);
+      }
     }).catchError((error) {
       progressDialog.dismiss();
-      handleError(context, error);
+      showErrorDialog(context, error.toString());
       print(error);
     });
 
@@ -445,11 +452,6 @@ class _HomeActivityState extends State<HomeActivity> {
   // }
 
   void viewDetailsDialog(LicenseDetailsModel model) {
-    if (model.status != 200) {
-      showErrorDialog(context, model.error);
-      return;
-    }
-
     List<Widget> tabList = [];
     List<Widget> tabViewList = [];
 

@@ -8,6 +8,8 @@ part of 'models.dart';
 
 CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
     CarDetailsResponse(
+      json['isError'] as bool?,
+      json['errMsg'] as String?,
       json['license_plate_company_data'] == null
           ? null
           : CarDetailsModel.fromJson(
@@ -21,6 +23,8 @@ CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
     <String, dynamic>{
+      'isError': instance.isError,
+      'errMsg': instance.errMsg,
       'license_plate_company_data': instance.license_plate_company_data,
       'license_numbers_data': instance.license_numbers_data,
     };
@@ -49,9 +53,10 @@ Map<String, dynamic> _$CarDetailsModelToJson(CarDetailsModel instance) =>
 
 LicenseDetailsModel _$LicenseDetailsModelFromJson(Map<String, dynamic> json) =>
     LicenseDetailsModel(
+      json['isError'] as bool?,
+      json['errMsg'] as String?,
       json['title'] as String?,
       json['status'] as int?,
-      json['error'] as String?,
       (json['categories'] as List<dynamic>?)
           ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -60,9 +65,10 @@ LicenseDetailsModel _$LicenseDetailsModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$LicenseDetailsModelToJson(
         LicenseDetailsModel instance) =>
     <String, dynamic>{
+      'isError': instance.isError,
+      'errMsg': instance.errMsg,
       'title': instance.title,
       'status': instance.status,
-      'error': instance.error,
       'categories': instance.categories,
     };
 

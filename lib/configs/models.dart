@@ -3,10 +3,12 @@ part 'models.g.dart';
 
 @JsonSerializable()
 class CarDetailsResponse {
+  bool? isError;
+  String? errMsg;
   CarDetailsModel? license_plate_company_data;
   List<LicenseDetailsModel?>? license_numbers_data;
 
-  CarDetailsResponse(this.license_plate_company_data, this.license_numbers_data);
+  CarDetailsResponse(this.isError, this.errMsg, this.license_plate_company_data, this.license_numbers_data);
 
   factory CarDetailsResponse.fromJson(Map<String, dynamic> json) => _$CarDetailsResponseFromJson(json);
 
@@ -31,12 +33,13 @@ class CarDetailsModel {
 
 @JsonSerializable()
 class LicenseDetailsModel {
+  bool? isError;
+  String? errMsg;
   String? title;
   int? status;
-  String? error;
   List<CategoryModel>? categories;
 
-  LicenseDetailsModel(this.title, this.status, this.error, this.categories);
+  LicenseDetailsModel(this.isError, this.errMsg, this.title, this.status, this.categories);
 
   factory LicenseDetailsModel.fromJson(Map<String, dynamic> json) => _$LicenseDetailsModelFromJson(json);
 

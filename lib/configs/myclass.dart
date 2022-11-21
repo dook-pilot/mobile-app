@@ -17,17 +17,6 @@ void showToast(String msg, {Toast length = Toast.LENGTH_SHORT, ToastGravity grav
   );
 }
 
-void handleError(BuildContext context, dynamic error) {
-  var dioError = (error as DioError).error;
-  if (dioError is HandshakeException) {
-    showErrorDialog(context, "Server error");
-  } else if (dioError is SocketException) {
-    showErrorDialog(context, "There is no connectivity. Please check your internet connection.");
-  } else {
-    showErrorDialog(context, "Server error");
-  }
-}
-
 bool isBlank(String? value) {
   return (value == null || value.trim().isEmpty);
 }
