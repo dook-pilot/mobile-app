@@ -36,10 +36,12 @@ class LicenseDetailsModel {
   bool? isError;
   String? errMsg;
   String? title;
+  String? car_company;
+  String? car_model;
   int? status;
   List<CategoryModel>? categories;
 
-  LicenseDetailsModel(this.isError, this.errMsg, this.title, this.status, this.categories);
+  LicenseDetailsModel(this.isError, this.errMsg, this.title, this.car_company, this.car_model, this.status, this.categories);
 
   factory LicenseDetailsModel.fromJson(Map<String, dynamic> json) => _$LicenseDetailsModelFromJson(json);
 

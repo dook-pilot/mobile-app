@@ -56,6 +56,8 @@ LicenseDetailsModel _$LicenseDetailsModelFromJson(Map<String, dynamic> json) =>
       json['isError'] as bool?,
       json['errMsg'] as String?,
       json['title'] as String?,
+      json['car_company'] as String?,
+      json['car_model'] as String?,
       json['status'] as int?,
       (json['categories'] as List<dynamic>?)
           ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
@@ -68,6 +70,8 @@ Map<String, dynamic> _$LicenseDetailsModelToJson(
       'isError': instance.isError,
       'errMsg': instance.errMsg,
       'title': instance.title,
+      'car_company': instance.car_company,
+      'car_model': instance.car_model,
       'status': instance.status,
       'categories': instance.categories,
     };

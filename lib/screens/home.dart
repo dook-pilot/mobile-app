@@ -475,6 +475,24 @@ class _HomeActivityState extends State<HomeActivity> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        color: Colors.white,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text('License: ${model.title}'),
+                            SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Text('Company: ${model.car_company}'),
+                                const Spacer(),
+                                Text('Model: ${model.car_model}'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                       Material(
                         color: Colors.white,
                         child: TabBar(
