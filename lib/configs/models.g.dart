@@ -8,7 +8,7 @@ part of 'models.dart';
 
 CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
     CarDetailsResponse(
-      json['isError'] as bool?,
+      json['status'] as bool?,
       json['errMsg'] as String?,
       json['license_plate_company_data'] == null
           ? null
@@ -23,7 +23,7 @@ CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
     <String, dynamic>{
-      'isError': instance.isError,
+      'status': instance.status,
       'errMsg': instance.errMsg,
       'license_plate_company_data': instance.license_plate_company_data,
       'license_numbers_data': instance.license_numbers_data,
@@ -31,6 +31,8 @@ Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
 
 CarDetailsModel _$CarDetailsModelFromJson(Map<String, dynamic> json) =>
     CarDetailsModel(
+      json['status'] as bool?,
+      json['errMsg'] as String?,
       json['place_api_company_name'] as String?,
       json['KVK_found'] as String?,
       json['Bovag_registered'] as String?,
@@ -43,6 +45,8 @@ CarDetailsModel _$CarDetailsModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$CarDetailsModelToJson(CarDetailsModel instance) =>
     <String, dynamic>{
+      'status': instance.status,
+      'errMsg': instance.errMsg,
       'place_api_company_name': instance.place_api_company_name,
       'KVK_found': instance.KVK_found,
       'Bovag_registered': instance.Bovag_registered,
@@ -53,12 +57,11 @@ Map<String, dynamic> _$CarDetailsModelToJson(CarDetailsModel instance) =>
 
 LicenseDetailsModel _$LicenseDetailsModelFromJson(Map<String, dynamic> json) =>
     LicenseDetailsModel(
-      json['isError'] as bool?,
+      json['status'] as bool?,
       json['errMsg'] as String?,
       json['title'] as String?,
       json['car_company'] as String?,
       json['car_model'] as String?,
-      json['status'] as int?,
       (json['categories'] as List<dynamic>?)
           ?.map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -67,12 +70,11 @@ LicenseDetailsModel _$LicenseDetailsModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$LicenseDetailsModelToJson(
         LicenseDetailsModel instance) =>
     <String, dynamic>{
-      'isError': instance.isError,
+      'status': instance.status,
       'errMsg': instance.errMsg,
       'title': instance.title,
       'car_company': instance.car_company,
       'car_model': instance.car_model,
-      'status': instance.status,
       'categories': instance.categories,
     };
 

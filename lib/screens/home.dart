@@ -117,7 +117,7 @@ class _HomeActivityState extends State<HomeActivity> {
         InkWell(
           onTap: () {
             var licenseModel = data?.license_numbers_data?.firstWhere((x) => x?.title == element, orElse: () => null);
-            if (licenseModel != null && (licenseModel.isError ?? true) == false) {
+            if (licenseModel != null && (licenseModel.status ?? false)) {
               viewDetailsDialog(licenseModel);
             } else {
               showErrorDialog(context, licenseModel?.errMsg ?? "License Detail not found.");
@@ -152,108 +152,117 @@ class _HomeActivityState extends State<HomeActivity> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Car Details',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-          ),
-          SizedBox(height: 10),
-          Row(
-            children: [
-              const Expanded(
-                  child: Text(
-                'Company Name',
-                style: TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text(
-                carDetails?.place_api_company_name ?? "-",
-                style: const TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-            ],
-          ),
-          const Divider(thickness: 0.5, height: 15, color: lineColor),
-          Row(
-            children: [
-              const Expanded(
-                  child: Text(
-                'KVK',
-                style: TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text(
-                carDetails?.KVK_found ?? "-",
-                style: const TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-            ],
-          ),
-          const Divider(thickness: 0.5, height: 15, color: lineColor),
-          Row(
-            children: [
-              const Expanded(
-                  child: Text(
-                'BOVAGE',
-                style: TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text(
-                carDetails?.Bovag_registered ?? "-",
-                style: const TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-            ],
-          ),
-          const Divider(thickness: 0.5, height: 15, color: lineColor),
-          Row(
-            children: [
-              const Expanded(
-                  child: Text(
-                'Multiples Companies at same location',
-                style: TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text(
-                carDetails?.duplicates_found ?? "-",
-                style: TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-            ],
-          ),
-          const Divider(thickness: 0.5, height: 15, color: lineColor),
-          Row(
-            children: [
-              const Expanded(
-                  child: Text(
-                'Profile Rating',
-                style: TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text(
-                carDetails?.rating ?? "-",
-                style: const TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-            ],
-          ),
-          const Divider(thickness: 0.5, height: 15, color: lineColor),
-          Row(
-            children: [
-              const Expanded(
-                  child: Text(
-                'Liscense Number',
-                style: TextStyle(fontSize: 14, color: textDarkColor),
-              )),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: widgetList,
+          if (carDetails?.status ?? false) ...[
+            Text(
+              'Car Details',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                const Expanded(
+                    child: Text(
+                  'Company Name',
+                  style: TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: Text(
+                  carDetails?.place_api_company_name ?? "-",
+                  style: const TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+              ],
+            ),
+            const Divider(thickness: 0.5, height: 15, color: lineColor),
+            Row(
+              children: [
+                const Expanded(
+                    child: Text(
+                  'KVK',
+                  style: TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: Text(
+                  carDetails?.KVK_found ?? "-",
+                  style: const TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+              ],
+            ),
+            const Divider(thickness: 0.5, height: 15, color: lineColor),
+            Row(
+              children: [
+                const Expanded(
+                    child: Text(
+                  'BOVAGE',
+                  style: TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: Text(
+                  carDetails?.Bovag_registered ?? "-",
+                  style: const TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+              ],
+            ),
+            const Divider(thickness: 0.5, height: 15, color: lineColor),
+            Row(
+              children: [
+                const Expanded(
+                    child: Text(
+                  'Multiples Companies at same location',
+                  style: TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: Text(
+                  carDetails?.duplicates_found ?? "-",
+                  style: TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+              ],
+            ),
+            const Divider(thickness: 0.5, height: 15, color: lineColor),
+            Row(
+              children: [
+                const Expanded(
+                    child: Text(
+                  'Profile Rating',
+                  style: TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: Text(
+                  carDetails?.rating ?? "-",
+                  style: const TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+              ],
+            ),
+          ] else
+            Text(
+              carDetails?.errMsg ?? "No car details found.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          if (carDetails?.license_number?.isNotEmpty == true) ...[
+            const Divider(thickness: 0.5, height: 15, color: lineColor),
+            Row(
+              children: [
+                const Expanded(
+                    child: Text(
+                  'Liscense Number',
+                  style: TextStyle(fontSize: 14, color: textDarkColor),
+                )),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: widgetList,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -352,10 +361,10 @@ class _HomeActivityState extends State<HomeActivity> {
       print(lat);
       print(lng);
 
-      //if (lat == null && lng == null) {
-      //  showErrorDialog(context, "This image doesn't have any location coordinates. You can't submit request.");
-      //  return;
-      //}
+      if (lat == null && lng == null) {
+        showErrorDialog(context, "This image doesn't have any location coordinates. You can't submit request.");
+        return;
+      }
 
       setState(() => data = null);
       progressDialog.show(context);
@@ -380,10 +389,9 @@ class _HomeActivityState extends State<HomeActivity> {
     apiService.carDetailsRequest(uploadFile).then((body) async {
       progressDialog.dismiss();
 
-      if ((body.isError ?? true) == false) {
+      if (body.status ?? false) {
         setState(() => data = body);
-      }
-      else {
+      } else {
         showErrorDialog(context, body.errMsg);
       }
     }).catchError((error) {
