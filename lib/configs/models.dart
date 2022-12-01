@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
 
@@ -5,10 +7,13 @@ part 'models.g.dart';
 class CarDetailsResponse {
   bool? status;
   String? errMsg;
+  double? lat;
+  double? lng;
+  String? selectedFilePath;
   CarDetailsModel? license_plate_company_data;
   List<LicenseDetailsModel?>? license_numbers_data;
 
-  CarDetailsResponse(this.status, this.errMsg, this.license_plate_company_data, this.license_numbers_data);
+  CarDetailsResponse(this.status, this.errMsg, this.lat, this.lng, this.selectedFilePath, this.license_plate_company_data, this.license_numbers_data);
 
   factory CarDetailsResponse.fromJson(Map<String, dynamic> json) => _$CarDetailsResponseFromJson(json);
 
