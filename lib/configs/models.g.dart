@@ -10,9 +10,6 @@ CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
     CarDetailsResponse(
       json['status'] as bool?,
       json['errMsg'] as String?,
-      (json['lat'] as num?)?.toDouble(),
-      (json['lng'] as num?)?.toDouble(),
-      json['selectedFilePath'] as String?,
       json['license_plate_company_data'] == null
           ? null
           : CarDetailsModel.fromJson(
@@ -28,9 +25,6 @@ Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
     <String, dynamic>{
       'status': instance.status,
       'errMsg': instance.errMsg,
-      'lat': instance.lat,
-      'lng': instance.lng,
-      'selectedFilePath': instance.selectedFilePath,
       'license_plate_company_data': instance.license_plate_company_data,
       'license_numbers_data': instance.license_numbers_data,
     };
