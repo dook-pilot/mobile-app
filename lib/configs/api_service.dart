@@ -15,6 +15,13 @@ abstract class ApiService {
   }
 
   @MultiPart()
+  @POST("/upload/")
+  Future<FileUploadResponse> uploadFile(@Part() File file, @Part() String title, @Part() String user_id);
+
+  @GET("/get-history/{user_id}")
+  Future<HistoryResponse> getHistory(@Path("user_id") String user_id);
+
+  @MultiPart()
   @POST("/license-plate/")
   Future<CarDetailsResponse> carDetailsRequest(@Part() File file);
 

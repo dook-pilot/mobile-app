@@ -20,9 +20,10 @@ class _LoginActivityState extends State<LoginActivity> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text('Login', style: appBarTextStyle()),
         centerTitle: true,
-        title: const Text('Login', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: SafeArea(
         child: Center(
@@ -30,13 +31,13 @@ class _LoginActivityState extends State<LoginActivity> {
             margin: const EdgeInsets.symmetric(horizontal: 30),
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20)],
-              borderRadius: BorderRadius.circular(CONTAINER_RADIUS),
+              borderRadius: BorderRadius.circular(WIDGET_RADIUS),
+              border: Border.all(color: lineLightColor),
               color: Colors.white,
             ),
             clipBehavior: Clip.antiAlias,
             child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -135,7 +136,7 @@ class _LoginActivityState extends State<LoginActivity> {
                           shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(WIDGET_RADIUS),
                           )),
-                          elevation: MaterialStateProperty.all(3),
+                          elevation: MaterialStateProperty.all(0),
                           backgroundColor: MaterialStateProperty.all(primaryColor),
                           textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
                       onPressed: () {

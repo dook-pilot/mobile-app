@@ -14,6 +14,47 @@ class _ApiService implements ApiService {
   String? baseUrl;
 
   @override
+  Future<FileUploadResponse> uploadFile(file, title, user_id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.files.add(MapEntry(
+        'file',
+        MultipartFile.fromFileSync(file.path,
+            filename: file.path.split(Platform.pathSeparator).last)));
+    _data.fields.add(MapEntry('title', title));
+    _data.fields.add(MapEntry('user_id', user_id));
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<FileUploadResponse>(Options(
+                method: 'POST',
+                headers: _headers,
+                extra: _extra,
+                contentType: 'multipart/form-data')
+            .compose(_dio.options, '/upload/',
+                queryParameters: queryParameters, data: _data)
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = FileUploadResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<HistoryResponse> getHistory(user_id) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<HistoryResponse>(
+            Options(method: 'GET', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/get-history/${user_id}',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = HistoryResponse.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<CarDetailsResponse> carDetailsRequest(file) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

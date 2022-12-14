@@ -52,37 +52,38 @@ class _LicenseDetailActivityState extends State<LicenseDetailActivity> {
       ),
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 5),
-            SizedBox(
-              height: 100,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.file(
-                  File(data?.selectedFilePath ?? ""),
-                  fit: BoxFit.contain,
-                ),
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20)],
+                color: Colors.white,
+              ),
+              child: GoogleMap(
+                mapType: MapType.normal,
+                initialCameraPosition: _cameraPosition,
+                markers: Set<Marker>.of(_markersList.values),
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
               ),
             ),
-            const SizedBox(height: 15),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20)],
-                  color: Colors.white,
-                ),
-                child: GoogleMap(
-                  mapType: MapType.normal,
-                  initialCameraPosition: _cameraPosition,
-                  markers: Set<Marker>.of(_markersList.values),
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller.complete(controller);
-                  },
-                ),
+              child: ListView(
+                children: [
+                  const SizedBox(height: 10),
+                  if (data != null) _buildCarDetails(),
+                  const SizedBox(height: 10),
+                  Text('Image', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
+                  const SizedBox(height: 10),
+                  Image.file(
+                    File(data?.selectedFilePath ?? ""),
+                    fit: BoxFit.contain,
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 15),
-            if (data != null) _buildCarDetails(),
+            )
           ],
         ),
       ),

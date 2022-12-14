@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:vng_pilot/configs/colors.dart';
 import 'package:vng_pilot/configs/models.dart';
 import 'package:vng_pilot/screens/home.dart';
+import 'package:vng_pilot/screens/homescreen.dart';
 import 'package:vng_pilot/screens/launcher.dart';
 import 'package:vng_pilot/screens/license_details.dart';
 import 'package:vng_pilot/screens/login.dart';
@@ -38,7 +39,7 @@ class _MainAppState extends State<MainApp> {
         var routes = <String, WidgetBuilder>{
           '/': (context) => LauncherActivity(),
           '/login': (context) => const LoginActivity(),
-          '/home': (context) => const HomeActivity(),
+          '/home': (context) => const HomeScreenActivity(),
           '/license_details': (context) => LicenseDetailActivity(data: settings.arguments as CarDetailsResponse?),
         };
         WidgetBuilder builder = routes[settings.name] as WidgetBuilder;

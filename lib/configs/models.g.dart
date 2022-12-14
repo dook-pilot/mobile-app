@@ -6,6 +6,54 @@ part of 'models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+FileUploadResponse _$FileUploadResponseFromJson(Map<String, dynamic> json) =>
+    FileUploadResponse(
+      json['status'] as bool?,
+      json['message'] as String?,
+    );
+
+Map<String, dynamic> _$FileUploadResponseToJson(FileUploadResponse instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'message': instance.message,
+    };
+
+HistoryResponse _$HistoryResponseFromJson(Map<String, dynamic> json) =>
+    HistoryResponse(
+      json['status'] as bool?,
+      message: json['message'] as String?,
+    )..documents = (json['documents'] as List<dynamic>?)
+        ?.map((e) => HistoryModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+Map<String, dynamic> _$HistoryResponseToJson(HistoryResponse instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'message': instance.message,
+      'documents': instance.documents,
+    };
+
+HistoryModel _$HistoryModelFromJson(Map<String, dynamic> json) => HistoryModel(
+      json['id'] as String,
+    )
+      ..title = json['title'] as String?
+      ..image = json['image'] as String?
+      ..datetime = json['datetime'] as String?
+      ..latitude = json['latitude'] as String?
+      ..longitude = json['longitude'] as String?
+      ..isProcessed = json['isProcessed'] as bool?;
+
+Map<String, dynamic> _$HistoryModelToJson(HistoryModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'image': instance.image,
+      'datetime': instance.datetime,
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'isProcessed': instance.isProcessed,
+    };
+
 CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
     CarDetailsResponse(
       json['status'] as bool?,

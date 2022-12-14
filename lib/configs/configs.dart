@@ -1,6 +1,11 @@
 
-const double CONTAINER_RADIUS = 8;
-const double WIDGET_RADIUS = 8;
+import 'package:flutter/material.dart';
+
+const double CONTAINER_RADIUS = 4;
+const double WIDGET_RADIUS = 4;
 
 const String HOST_URL = "https://api.dynalytix.ai";
-// const String HOST_URL = "https://requests.cyou/";
+
+TextStyle appBarTextStyle() {
+  return const TextStyle(fontSize: 16, color: Colors.white);
+}

@@ -37,6 +37,18 @@ class ProgressDialog {
   }
 }
 
+Widget showErrorWidget(String? errorText) {
+  return Center(
+    child: Material(
+      color: Colors.white,
+      shape: BeveledRectangleBorder(
+        borderRadius: BorderRadius.circular(WIDGET_RADIUS),
+      ),
+      child: Text(errorText ?? 'Something went wrong.'),
+    ),
+  );
+}
+
 showErrorDialog(BuildContext context, String? errorText, {String errorButton = "none"}) {
   showDialog(
       context: context,

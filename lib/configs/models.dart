@@ -1,7 +1,48 @@
-import 'dart:io';
 
 import 'package:json_annotation/json_annotation.dart';
 part 'models.g.dart';
+
+@JsonSerializable()
+class FileUploadResponse {
+  bool? status;
+  String? message;
+
+  FileUploadResponse(this.status, this.message);
+
+  factory FileUploadResponse.fromJson(Map<String, dynamic> json) => _$FileUploadResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$FileUploadResponseToJson(this);
+}
+
+@JsonSerializable()
+class HistoryResponse {
+  bool? status;
+  String? message;
+  List<HistoryModel>? documents;
+
+  HistoryResponse(this.status, {this.message});
+
+  factory HistoryResponse.fromJson(Map<String, dynamic> json) => _$HistoryResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HistoryResponseToJson(this);
+}
+
+@JsonSerializable()
+class HistoryModel {
+  String id;
+  String? title;
+  String? image;
+  String? datetime;
+  String? latitude;
+  String? longitude;
+  bool? isProcessed;
+
+  HistoryModel(this.id);
+
+  factory HistoryModel.fromJson(Map<String, dynamic> json) => _$HistoryModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HistoryModelToJson(this);
+}
 
 @JsonSerializable()
 class CarDetailsResponse {

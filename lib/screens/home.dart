@@ -75,7 +75,7 @@ class _HomeActivityState extends State<HomeActivity> {
                               ),
                             ),
                             SizedBox(height: 10),
-                            Text('Select Image', textAlign: TextAlign.center,)
+                            Text((_selectedImage == null) ? 'Select Image' : _selectedImage!.path.split('/').last, textAlign: TextAlign.center,)
                           ],
                         ),
                       ),
