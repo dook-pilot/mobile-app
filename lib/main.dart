@@ -1,16 +1,23 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:vng_pilot/configs/colors.dart';
 import 'package:vng_pilot/configs/models.dart';
-import 'package:vng_pilot/screens/home.dart';
+import 'package:vng_pilot/configs/myclass.dart';
 import 'package:vng_pilot/screens/homescreen.dart';
 import 'package:vng_pilot/screens/launcher.dart';
 import 'package:vng_pilot/screens/license_details.dart';
 import 'package:vng_pilot/screens/login.dart';
+import 'package:vng_pilot/screens/zoom_imageview.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  Directory appDocDir = await getApplicationDocumentsDirectory();
+  MyClass.appDocPath = appDocDir.path;
 
   runApp(MainApp());
 }
@@ -41,6 +48,7 @@ class _MainAppState extends State<MainApp> {
           '/login': (context) => const LoginActivity(),
           '/home': (context) => const HomeScreenActivity(),
           '/license_details': (context) => LicenseDetailActivity(data: settings.arguments as CarDetailsResponse?),
+          '/zoom_imageview': (context) => ZoomImageView(model: settings.arguments as HistoryModel),
         };
         WidgetBuilder builder = routes[settings.name] as WidgetBuilder;
         return MaterialPageRoute(

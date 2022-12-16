@@ -70,6 +70,9 @@ CarDetailsResponse _$CarDetailsResponseFromJson(Map<String, dynamic> json) =>
               ? null
               : LicenseDetailsModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+      json['history'] == null
+          ? null
+          : HistoryModel.fromJson(json['history'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
@@ -81,6 +84,7 @@ Map<String, dynamic> _$CarDetailsResponseToJson(CarDetailsResponse instance) =>
       'selectedFilePath': instance.selectedFilePath,
       'license_plate_company_data': instance.license_plate_company_data,
       'license_numbers_data': instance.license_numbers_data,
+      'history': instance.history,
     };
 
 CarDetailsModel _$CarDetailsModelFromJson(Map<String, dynamic> json) =>

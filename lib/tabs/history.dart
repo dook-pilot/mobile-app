@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_download_manager/flutter_download_manager.dart';
+import 'package:native_exif/native_exif.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:vng_pilot/configs/models.dart';
 import 'package:vng_pilot/configs/myclass.dart';
@@ -17,6 +21,13 @@ class HistoryTab extends StatefulWidget {
 }
 
 class _HistoryTabState extends State<HistoryTab> {
+  final ProgressDialog progressDialog = ProgressDialog();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -58,19 +69,21 @@ class _HistoryTabState extends State<HistoryTab> {
 
   Widget buildShimmer() {
     return Shimmer.fromColors(
-      baseColor: shimmerBaseColor,
-      highlightColor: shimmerHighlightColor,
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset("assets/images/vng_icon.png", height: 80, color: lineColor),
-            SizedBox(height: 20),
-            Text("Please wait...", style: TextStyle(fontSize: 20, color: lineColor),)
-          ],
-        ),
-      )
-    );
+        baseColor: shimmerBaseColor,
+        highlightColor: shimmerHighlightColor,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset("assets/images/vng_icon.png", height: 80, color: lineColor),
+              SizedBox(height: 20),
+              Text(
+                "Please wait...",
+                style: TextStyle(fontSize: 20, color: lineColor),
+              )
+            ],
+          ),
+        ));
   }
 
   Widget buildData(HistoryResponse model) {
@@ -107,6 +120,7 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   Widget _buildGridItem(HistoryModel model) {
+    var imageFile = File("${MyClass.appDocPath}/${model.id}");
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(WIDGET_RADIUS),
@@ -119,11 +133,17 @@ class _HistoryTabState extends State<HistoryTab> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(WIDGET_RADIUS),
-            child: PlaceHolderImage(
-              image: model.image ?? "",
-              height: 120,
-              fit: BoxFit.cover,
-            ),
+            child: (imageFile.existsSync())
+                ? Image.file(
+                    imageFile,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  )
+                : PlaceHolderImage(
+                    image: model.image ?? "",
+                    height: 120,
+                    fit: BoxFit.cover,
+                  ),
           ),
           Padding(
               padding: const EdgeInsets.all(10),
@@ -131,12 +151,10 @@ class _HistoryTabState extends State<HistoryTab> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    model.title ?? "-",
-                    maxLines: 1,
-                    overflow: TextOverflow.clip,
-                    style: TextStyle(fontSize: 14, color: textDarkColor),
+                    getImageName(model.image ?? ""),
+                    style: TextStyle(fontSize: 13, color: textDarkColor),
                   ),
-                  SizedBox(height: 3),
+                  SizedBox(height: 5),
                   Text(
                     formatDateTime(model.datetime ?? "-"),
                     style: TextStyle(fontSize: 12, color: textMidColor),
@@ -159,7 +177,11 @@ class _HistoryTabState extends State<HistoryTab> {
                         ),
                       ),
                       const Spacer(),
-                      Text('View Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: (model.isProcessed == true) ? linkColor : textLightColor))
+                      InkWell(
+                          onTap: (model.isProcessed == true) ? () {
+                            _getLicenseDetails(model);
+                          } : null,
+                          child: Text('View Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: (model.isProcessed == true) ? linkColor : textLightColor)))
                     ],
                   )
                 ],
@@ -170,11 +192,19 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   Widget _buildListItem(HistoryModel model) {
+    var imageFile = File("${MyClass.appDocPath}/${model.id}");
     return Row(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(WIDGET_RADIUS),
-          child: PlaceHolderImage(
+          child: (imageFile.existsSync()) ?
+          Image.file(
+            imageFile,
+            width: 120,
+            height: 100,
+            fit: BoxFit.cover,
+          ) :
+          PlaceHolderImage(
             image: model.image ?? "",
             width: 120,
             height: 100,
@@ -182,14 +212,13 @@ class _HistoryTabState extends State<HistoryTab> {
           ),
         ),
         SizedBox(width: 10),
-        Expanded(child: Column(
+        Expanded(
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              model.title ?? "-",
-              maxLines: 1,
-              overflow: TextOverflow.clip,
-              style: TextStyle(fontSize: 15, color: textDarkColor),
+              getImageName(model.image ?? ""),
+              style: TextStyle(fontSize: 13, color: textDarkColor),
             ),
             SizedBox(height: 5),
             Text(
@@ -214,7 +243,11 @@ class _HistoryTabState extends State<HistoryTab> {
                   ),
                 ),
                 const Spacer(),
-                Text('View Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: (model.isProcessed == true) ? linkColor : textLightColor))
+                InkWell(
+                    onTap: (model.isProcessed == true) ? () {
+                      _getLicenseDetails(model);
+                    } : null,
+                    child: Text('View Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: (model.isProcessed == true) ? linkColor : textLightColor)))
               ],
             )
           ],
@@ -223,13 +256,51 @@ class _HistoryTabState extends State<HistoryTab> {
     );
   }
 
+  String getImageName(String str) {
+    String val = str.substring(0, str.indexOf('?'));
+    val = val.substring(val.lastIndexOf('/') + 1, val.length);
+    return val;
+  }
+
   Future<HistoryResponse> _fetchHistory() async {
     late HistoryResponse _model;
     final apiService = ApiService.create();
-    await apiService.getHistory(MyClass.userId).then((body) => _model = body).catchError((error) {
+    await apiService.getHistory(MyClass.userId).then((body) {
+      _model = body;
+      _downloadImages(body.documents);
+    }).catchError((error) {
       _model = HistoryResponse(false, message: error.toString());
       return _model;
     });
     return _model;
+  }
+
+  _downloadImages(List<HistoryModel>? documents) async {
+    var dl = DownloadManager();
+
+    documents?.forEach((element) async {
+      dl.addDownload(element.image ?? "", "${MyClass.appDocPath}/${element.id}");
+    });
+  }
+
+  _getLicenseDetails(HistoryModel model) async {
+    progressDialog.show(context);
+    final apiService = ApiService.create();
+    apiService.getLicenseDetails(model.id).then((body) async {
+      progressDialog.dismiss();
+
+      if (body.status ?? false) {
+        var exif = await Exif.fromPath("${MyClass.appDocPath}/${model.id}");
+        body.lat = await exif.getAttribute("GPSLatitude");
+        body.lng = await exif.getAttribute("GPSLongitude");
+        body.history = model;
+        Navigator.pushNamed(context, "/license_details", arguments: body);
+      } else {
+        showErrorDialog(context, body.errMsg);
+      }
+    }).catchError((error) {
+      progressDialog.dismiss();
+      showErrorDialog(context, error.toString());
+    });
   }
 }

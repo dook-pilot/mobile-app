@@ -6,6 +6,7 @@ import 'package:vng_pilot/configs/colors.dart';
 class MyClass {
   static String userId = "abc";
   static bool isGridView = false;
+  static String appDocPath = "";
 }
 
 String formatDateTime(String datetime) {

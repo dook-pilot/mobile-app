@@ -21,6 +21,9 @@ abstract class ApiService {
   @GET("/get-history/{user_id}")
   Future<HistoryResponse> getHistory(@Path("user_id") String user_id);
 
+  @GET("/get-data/{id}")
+  Future<CarDetailsResponse> getLicenseDetails(@Path("id") String id);
+
   @MultiPart()
   @POST("/license-plate/")
   Future<CarDetailsResponse> carDetailsRequest(@Part() File file);

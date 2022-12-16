@@ -89,7 +89,7 @@ class _HomeTabState extends State<HomeTab> {
                         // controller: _firstNameController,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                          labelText: 'Description',
+                          labelText: 'Note',
                           labelStyle: TextStyle(fontWeight: FontWeight.w400, letterSpacing: 0.5, color: textLightColor),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.all(Radius.circular(WIDGET_RADIUS)),
@@ -116,12 +116,6 @@ class _HomeTabState extends State<HomeTab> {
                         ),
                         style: const TextStyle(fontSize: 16, color: textDarkColor),
                         textCapitalization: TextCapitalization.characters,
-                        validator: (value) {
-                          if ((value ?? "").trim().isEmpty) {
-                            return "Required";
-                          }
-                          return null;
-                        },
                         onSaved: (value) {
                           _title = value ?? "";
                         },
@@ -138,10 +132,6 @@ class _HomeTabState extends State<HomeTab> {
                             textStyle: MaterialStateProperty.all(TextStyle(color: Colors.white))),
                         onPressed: () {
                           _formKey.currentState!.save();
-                          if (!_formKey.currentState!.validate()) {
-                            return;
-                          }
-
                           _requestData();
                         },
                         child: Text('Upload', style: TextStyle(color: Colors.white)),

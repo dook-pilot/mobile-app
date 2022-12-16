@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import '../configs/colors.dart';
 import '../configs/configs.dart';
 import '../configs/models.dart';
 import '../configs/myclass.dart';
 import '../widgets/dialogs.dart';
+import '../widgets/placeholder_imageview.dart';
 
 class LicenseDetailActivity extends StatefulWidget {
   final CarDetailsResponse? data;
@@ -74,13 +76,6 @@ class _LicenseDetailActivityState extends State<LicenseDetailActivity> {
                 children: [
                   const SizedBox(height: 10),
                   if (data != null) _buildCarDetails(),
-                  const SizedBox(height: 10),
-                  Text('Image', textAlign: TextAlign.center, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),),
-                  const SizedBox(height: 10),
-                  Image.file(
-                    File(data?.selectedFilePath ?? ""),
-                    fit: BoxFit.contain,
-                  ),
                 ],
               ),
             )
@@ -91,6 +86,7 @@ class _LicenseDetailActivityState extends State<LicenseDetailActivity> {
   }
 
   Widget _buildCarDetails() {
+    var imageFile = File("${MyClass.appDocPath}/${data?.history?.id}");
     var carDetails = data?.license_plate_company_data;
 
     List<Widget> widgetList = [];
@@ -249,6 +245,43 @@ class _LicenseDetailActivityState extends State<LicenseDetailActivity> {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
+          const Divider(thickness: 0.5, height: 15, color: lineColor),
+          Row(
+            children: [
+              const Expanded(
+                  child: Text(
+                    'Image',
+                    style: TextStyle(fontSize: 14, color: textDarkColor),
+                  )),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.topStart,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, "/zoom_imageview", arguments: data!.history!);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(WIDGET_RADIUS),
+                      child: (imageFile.existsSync()) ?
+                      Image.file(
+                        imageFile,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ) :
+                      PlaceHolderImage(
+                        image: data?.history?.image ?? "",
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -279,23 +312,24 @@ class _LicenseDetailActivityState extends State<LicenseDetailActivity> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(10),
                         color: Colors.white,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text('License: ${model.title}'),
+                            Text('License: ${model.title}', style: TextStyle(color: linkColor, fontSize: 15)),
                             SizedBox(height: 10),
                             Row(
                               children: [
-                                Text('Company: ${model.car_company}'),
+                                Text('Company: ${model.car_company}', style: TextStyle(fontSize: 14)),
                                 const Spacer(),
-                                Text('Model: ${model.car_model}'),
+                                Text('Model: ${model.car_model}', style: TextStyle(fontSize: 14)),
                               ],
                             ),
                           ],
                         ),
                       ),
+                      const Divider(thickness: 0.5, height: 0.5, color: lineColor),
                       Material(
                         color: Colors.white,
                         child: TabBar(
