@@ -145,7 +145,7 @@ class _LoginActivityState extends State<LoginActivity> {
                           return;
                         }
 
-                        if (_username == "demo" && _password == "2345") {
+                        if (_username.toLowerCase() == "demo" && _password == "2345") {
                           Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
                         }
                         else {

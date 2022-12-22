@@ -30,7 +30,7 @@ class _HomeTabState extends State<HomeTab> {
     return Column(
       children: [
         AppBar(
-          title: Text('Home', style: appBarTextStyle()),
+          title: Text('Upload Image', style: appBarTextStyle()),
           centerTitle: true,
           foregroundColor: Colors.white,
           elevation: 0,

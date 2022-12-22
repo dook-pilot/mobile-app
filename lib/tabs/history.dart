@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dynamic_height_grid_view/dynamic_height_grid_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_download_manager/flutter_download_manager.dart';
@@ -14,7 +13,8 @@ import '../configs/configs.dart';
 import '../widgets/placeholder_imageview.dart';
 
 class HistoryTab extends StatefulWidget {
-  const HistoryTab({Key? key}) : super(key: key);
+  final VoidCallback? onUpload;
+  const HistoryTab({Key? key, required this.onUpload}) : super(key: key);
 
   @override
   State<HistoryTab> createState() => _HistoryTabState();
@@ -38,6 +38,9 @@ class _HistoryTabState extends State<HistoryTab> {
           foregroundColor: Colors.white,
           elevation: 0,
           actions: [
+            IconButton(onPressed: () {
+              setState(() {});
+            }, icon: Icon(Icons.refresh)),
             IconButton(
                 onPressed: () {
                   setState(() {
@@ -48,21 +51,37 @@ class _HistoryTabState extends State<HistoryTab> {
           ],
         ),
         Expanded(
-            child: FutureBuilder<HistoryResponse>(
+            child: Stack(
+              children: [
+                FutureBuilder<HistoryResponse>(
           future: _fetchHistory(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data != null && snapshot.data?.status == true) {
-                return buildData(snapshot.data!);
-              } else {
-                return showErrorWidget(snapshot.data?.message);
-              }
-            } else if (snapshot.hasError) {
-              return showErrorWidget(snapshot.error.toString());
-            }
-            return buildShimmer();
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return buildShimmer();
+                }
+                if (snapshot.hasData) {
+                  if (snapshot.data != null && snapshot.data?.status == true) {
+                    return buildData(snapshot.data!);
+                  } else {
+                    return showErrorWidget(snapshot.data?.message);
+                  }
+                } else if (snapshot.hasError) {
+                  return showErrorWidget(snapshot.error.toString());
+                }
+                return buildShimmer();
           },
-        ))
+        ),
+                PositionedDirectional(
+                  bottom: 20,
+                  end: 20,
+                  child: FloatingActionButton(
+                    child: Icon(Icons.add, color: Colors.white),
+                    backgroundColor: primaryColor,
+                    onPressed: widget.onUpload,
+                  ),
+                )
+              ],
+            ))
       ],
     );
   }
@@ -284,13 +303,21 @@ class _HistoryTabState extends State<HistoryTab> {
   }
 
   _getLicenseDetails(HistoryModel model) async {
+    var exif;
+    try {
+      exif = await Exif.fromPath("${MyClass.appDocPath}/${model.id}");
+    }
+    catch (ex) {
+      showToast("Please wait image is downloading...");
+      return;
+    }
+
     progressDialog.show(context);
     final apiService = ApiService.create();
     apiService.getLicenseDetails(model.id).then((body) async {
       progressDialog.dismiss();
 
       if (body.status ?? false) {
-        var exif = await Exif.fromPath("${MyClass.appDocPath}/${model.id}");
         body.lat = await exif.getAttribute("GPSLatitude");
         body.lng = await exif.getAttribute("GPSLongitude");
         body.history = model;

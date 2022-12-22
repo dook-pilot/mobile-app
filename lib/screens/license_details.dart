@@ -317,7 +317,20 @@ class _LicenseDetailActivityState extends State<LicenseDetailActivity> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text('License: ${model.title}', style: TextStyle(color: linkColor, fontSize: 15)),
+                           Row(
+                             children: [
+                               Text('License: ${model.title}', style: TextStyle(color: linkColor, fontSize: 15)),
+                               const Spacer(),
+                               SizedBox(
+                                 width: 30,
+                                 height: 30,
+                                 child: IconButton(
+                                   onPressed: () { Navigator.pop(context); },
+                                   icon: Icon(Icons.cancel, color: textMidColor),
+                                 ),
+                               )
+                             ],
+                           ),
                             SizedBox(height: 10),
                             Row(
                               children: [

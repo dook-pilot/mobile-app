@@ -10,7 +10,7 @@ class MyClass {
 }
 
 String formatDateTime(String datetime) {
-  return datetime.substring(0, datetime.indexOf('.'));
+  return datetime;
 }
 
 void showToast(String msg, {Toast length = Toast.LENGTH_SHORT, ToastGravity gravity = ToastGravity.BOTTOM}) {

@@ -54,7 +54,7 @@ class _HomeScreenActivityState extends State<HomeScreenActivity> {
                 ),
               ),
             ),
-            _buildNavItem(index: 0, title: 'Home', icon: Icons.home_outlined, onTap: () => _onItemTapped(0)),
+            _buildNavItem(index: 0, title: 'Upload Image', icon: Icons.upload_outlined, onTap: () => _onItemTapped(0)),
             _buildNavItem(index: 1, title: 'History', icon: Icons.photo_library_outlined, onTap: () => _onItemTapped(1)),
             Divider(),
             _buildNavItem(
@@ -73,7 +73,9 @@ class _HomeScreenActivityState extends State<HomeScreenActivity> {
   Widget _getCurrentTab() {
     List<Widget> _tabList = [
       HomeTab(),
-      HistoryTab(),
+      HistoryTab(onUpload: () {
+        setState(() => _selectedPage = 0);
+      }),
     ];
 
     return _tabList[_selectedPage];

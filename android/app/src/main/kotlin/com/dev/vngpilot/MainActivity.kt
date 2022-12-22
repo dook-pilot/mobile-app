@@ -1,4 +1,4 @@
-package com.app.vngpilot
+package com.dev.vngpilot
 
 import io.flutter.embedding.android.FlutterActivity
 
